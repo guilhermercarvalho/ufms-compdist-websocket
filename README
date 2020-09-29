@@ -144,7 +144,7 @@ ssh-keygen -t rsa -b 2048 -f .ssh/id_vm_java_web_socket
 ssh-copy-id -i .ssh/id_vm_java_web_socket.pub joao@192.168.1.10
 ```
 
-Acesse a *VM* e reinicie o sistema:
+Acesse a *VM* e desligue o sistema:
 
 ```shell
 sudo shutdown now
