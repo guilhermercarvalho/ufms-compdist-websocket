@@ -23,12 +23,5 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 
-# Mount vscode extensions
-RUN mkdir -p /home/$USERNAME/.vscode-server/extensions \
-        /home/$USERNAME/.vscode-server-insiders/extensions \
-    && chown -R $USERNAME \
-        /home/$USERNAME/.vscode-server \
-        /home/$USERNAME/.vscode-server-insiders
-
 # [Optional] Set the default user. Omit if you want to keep the default as root.
 USER $USERNAME
