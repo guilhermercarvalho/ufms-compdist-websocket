@@ -30,7 +30,7 @@ Para sistemas UNIX como Linux, a execução do *script* de instalação é mais 
 curl -fsSL https://get.docker.com | sudo sh
 ```
 
-Para utilizar o **Docker** com seu usuário, para não ter que digitar *sudo* o tempo todo e então entrar com o usuário *root*, considere adicionar seu usuário ao grupo "docker".
+Para utilizar o **Docker** com seu usuário, e não ter que digitar *sudo* o tempo todo e então entrar com o usuário *root*, considere adicionar seu usuário ao grupo "docker".
 
 ```shell
 sudo usermod -aG docker ${USER}
@@ -49,7 +49,7 @@ Após instalado, instale também a extensão [Remote Development](https://market
 Com o vscode aberto:
 
 - aperte as teclas ```Ctrl+Shift+P```
-- apague o caractere "```>```"
+- apague o caractere ```>```
 - cole o seguinte comando:
 
     ```shell
@@ -128,7 +128,7 @@ sudo apt install -y default-jdk
 
 ### SSH Key
 
-Para acessar de modo mais eficiente o sistema vida *ssh* crie uma chave específica para acessar a *VM*.
+Para acessar de modo mais eficiente o sistema via *ssh* crie uma chave específica para acessar a *VM*.
 
 ### No seu sistema ***host*** (abra o terminal integrado presente no vscode -> ```Ctrl+J```)
 
