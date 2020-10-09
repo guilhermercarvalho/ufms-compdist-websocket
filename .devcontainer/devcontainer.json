@@ -26,13 +26,13 @@
 		"vscjava.vscode-java-pack"
 	],
 
-	"workspaceFolder": "/workspaces/web_socket_java/app",
+	"workspaceFolder": "/workspaces/websocket-compdist/app",
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "sh /workspaces/java-test/scripts/java-exec.sh",
+	"postCreateCommand": "sh /workspaces/websocket-compdist/app/script/alias.sh",
 
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode",
