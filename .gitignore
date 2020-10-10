@@ -12,3 +12,6 @@
 *.zip
 *.tar.gz
 *.rar
+
+# Bin folder
+app/bin
