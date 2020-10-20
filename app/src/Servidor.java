@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Servidor {
-    private static ArrayList<ServerThread> clients = new ArrayList<>();
+    private static ArrayList<ClientHandler> clients = new ArrayList<>();
     private static ExecutorService pool = Executors.newFixedThreadPool(5);
 
     public static void main(String[] args) throws Exception {
@@ -22,7 +22,7 @@ public class Servidor {
                 System.out.println("Server IP " + socket.getInetAddress().getHostAddress() + " on port " + PORT);
                 Socket client = socket.accept();
 
-                ServerThread clientThread = new ServerThread(client);
+                ClientHandler clientThread = new ClientHandler(client);
                 clients.add(clientThread);
                 pool.execute(clientThread);
 
