@@ -76,8 +76,13 @@ public class ClientHandler implements Runnable {
                     }
                     sendResponse("200 Document Follows", "text/html", content.toByteArray());
                 } else if (Files.exists(filePath)) {
-                    String contentType = wichContentType(filePath);
+                    if (file.getParent().equals("../www/cgi-bin")){
+                        // TO DO - executar o arquivo CGI 
+                        // sendCGIResponse("200 Document Follows", wichContentType(filePath), Files.readAllBytes(filePath));  nadave
+                    }
+                    else{String contentType = wichContentType(filePath);
                     sendResponse("200 Document Follows", contentType, Files.readAllBytes(filePath));
+                    }
                 } else {
                     byte[] notFoundContet = "<h1>Not found</h1>".getBytes();
                     sendResponse("404 Not Found", "text/html", notFoundContet);
@@ -108,6 +113,21 @@ public class ClientHandler implements Runnable {
         out.write("\r\n\r\n".getBytes());
         out.flush();
     }
+
+    // private void sendCGIResponse(String status, String contentType, byte[] content) throws IOException {   nadave tá tarde deu sono
+    //     Date date = new Date();
+    //     SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+
+    //     out.write(("HTTP/1.1 " + status + "\r\n").getBytes());
+    //     out.write(("Date: " + formatter.format(date) + "\r\n").getBytes());
+    //     out.write("Server: FACOM-CD-2020/1.0\r\n".getBytes());
+    //     out.write(("Content-type: " + contentType + "\r\n").getBytes());
+    //     out.write("\r\n".getBytes());
+    //     out.write(content);
+    //     out.write("\r\n\r\n".getBytes());
+    //     out.flush();
+    // }
 
     private String wichContentType(Path filePath) throws IOException {
         return Files.probeContentType(filePath);
