@@ -1,12 +1,9 @@
-import java.io.*;
 import java.net.*;
-import java.nio.file.*;
 import java.util.*;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Servidor {
+public class Server {
     private static ArrayList<ClientHandler> clients = new ArrayList<>();
     private static ExecutorService pool = Executors.newFixedThreadPool(5);
 
@@ -25,7 +22,6 @@ public class Servidor {
                 ClientHandler clientThread = new ClientHandler(client);
                 clients.add(clientThread);
                 pool.execute(clientThread);
-
             }
         } catch (Exception ioe) {
             System.err.println(ioe.getMessage());
@@ -52,10 +48,10 @@ public class Servidor {
                 throw new IllegalArgumentException();
             }
         } catch (NumberFormatException e) {
-            System.err.println("Argumento" + args[1] + " deve ser um inteiro.");
+            System.err.println("Argument " + args[1] + " is invalid. Must be an integer.");
             System.exit(1);
         } catch (IllegalArgumentException e) {
-            System.err.println("Agumentos inválido!\n" + "Args validos: " + avaliable);
+            System.err.println("Invalid Arguments" + "Avaliables are: " + avaliable);
             System.exit(1);
         }
     }
