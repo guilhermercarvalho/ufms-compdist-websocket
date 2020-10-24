@@ -1,16 +1,17 @@
 import java.io.*;
+import java.lang.ProcessBuilder.Redirect;
 import java.lang.reflect.Array;
 import java.net.*;
 import java.nio.file.*;
 import java.util.*;
 
-public class ClientHandler implements Runnable {
+public class TesteRoger implements Runnable {
 
     private Socket client;
     private BufferedReader in;
     private static OutputStream out;
 
-    ClientHandler(Socket c) throws IOException {
+    TesteRoger(Socket c) throws IOException {
         client = c;
         in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         out = client.getOutputStream();
@@ -55,17 +56,26 @@ public class ClientHandler implements Runnable {
                 File file = new File(filePath.toString());
 
                 System.out.println("===================================================");
-                System.out.println((file.getParent().substring(6).equals("\\cgi-bin")));
+                System.out.println((file.getParent().substring(6).equals("/cgi-bin")));
+                System.out.println((file.getParent().substring(6)));
+                System.out.println(path);
+                System.out.println(filePath.toString());
                 System.out.println("===================================================");
 
-                if (file.getParent().substring(6).equals("\\cgi-bin")) {
+                if (file.getParent().substring(6).equals("/cgi-bin")) {
                     // String commandLine;
-                    // BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+                    // BufferedReader console = new BufferedReader(new
+                    // InputStreamReader(System.in));
                     System.out.println(file.getPath());
 
-                    String queryString = file.getPath().split("?")[1]; // pega o valor da query depois do ?  SE COLOCA ? NO QUERY ELE NAO ENTRA AQUI
+                    String fileExec = file.getPath().split("\\?")[0]; // pega o valor da query depois do ? SE COLOCA ?
+                    String queryString = file.getPath().split("\\?")[1]; // pega o valor da query depois do ? SE COLOCA
+                                                                         // ?
+                                                                         // NO QUERY ELE NAO ENTRA AQUI
 
                     System.out.println("===================================================");
+                    System.out.println(fileExec);
+                    System.out.println(file.getAbsolutePath());
                     System.out.println(queryString);
                     System.out.println("===================================================");
 
@@ -76,22 +86,26 @@ public class ClientHandler implements Runnable {
                     // continue;
                     // if (commandLine.equals("exit"))
                     // break;
+                    ByteArrayOutputStream content = new ByteArrayOutputStream();
+                    ProcessBuilder pb = new ProcessBuilder(fileExec);
+                    Map<String, String> env = pb.environment();
+                    env.put("QUERY_STRING", queryString);
+                    // pb.redirectOutput(content.);
 
-                    // ProcessBuilder pb = new ProcessBuilder(commandLine);
-                    // Map<String, String> env = pb.environment();
-                    // env.put("QUERY_STRING", queryString);
+                    Process proc = pb.start();
 
-                    // Process proc = pb.start();
-                    // // obtain the input stream
-                    // InputStream is = proc.getInputStream();
-                    // InputStreamReader isr = new InputStreamReader(is);
-                    // BufferedReader br = new BufferedReader(isr);
-                    // // read what is returned by the command
-                    // line = "";
-                    // while ((line = br.readLine()) != null)
-                    //     System.out.println(line);
+                    InputStream is = proc.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    String lineq;
+                    while ((lineq = br.readLine()) != null) {
+                        content.write(lineq.getBytes());
+                        System.out.println(lineq);
+                    }
 
                     // br.close();
+                    sendResponse("200 Document Follows", "text/html", content.toByteArray());
+                    client.close();
                 }
 
                 else if (Files.isDirectory(filePath)) {
