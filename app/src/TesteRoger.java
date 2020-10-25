@@ -5,6 +5,8 @@ import java.net.*;
 import java.nio.file.*;
 import java.util.*;
 
+import javax.print.attribute.standard.MediaSize.ISO;
+
 public class TesteRoger implements Runnable {
 
     private Socket client;
@@ -15,10 +17,11 @@ public class TesteRoger implements Runnable {
         client = c;
         in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         out = client.getOutputStream();
+        c.setSoTimeout((10 * 1000));
     }
 
     public void run() {
-        // System.out.println("Client " + client.toString());
+        System.out.println("Client " + client.toString());
 
         try {
             while (true) {
@@ -43,51 +46,35 @@ public class TesteRoger implements Runnable {
                 List<String> headers = new ArrayList<>();
 
                 for (int h = 2; h < reqsLines.length; h++) {
-                    String header = reqsLines[h];
+                    String header = reqsLines[h].toLowerCase();
                     headers.add(header);
                 }
 
                 String accessLog = String.format("Client %s, method %s, path %s, version %s, host %s, headers %s",
                         client.toString(), method, path, version, host, headers.toString());
-                // System.out.println(accessLog);
+                System.out.println(accessLog);
 
-                // File file = new File(path);
+                int indexConnection = headers.indexOf("connection: keep-alive");
+                if (indexConnection == -1)
+                    client.setKeepAlive(false);
+                else
+                    client.setKeepAlive(true);
+
+                System.out.println("is alive: " + client.getKeepAlive());
                 Path filePath = getFilePath(path);
                 File file = new File(filePath.toString());
 
-                System.out.println("===================================================");
-                System.out.println((file.getParent().substring(6).equals("/cgi-bin")));
-                System.out.println((file.getParent().substring(6)));
-                System.out.println(path);
-                System.out.println(filePath.toString());
-                System.out.println("===================================================");
-
                 if (file.getParent().substring(6).equals("/cgi-bin")) {
-                    // String commandLine;
-                    // BufferedReader console = new BufferedReader(new
-                    // InputStreamReader(System.in));
-                    System.out.println(file.getPath());
 
                     String fileExec = file.getPath().split("\\?")[0]; // pega o valor da query depois do ? SE COLOCA ?
                     String queryString = file.getPath().split("\\?")[1]; // pega o valor da query depois do ? SE COLOCA
                                                                          // ?
                                                                          // NO QUERY ELE NAO ENTRA AQUI
 
-                    System.out.println("===================================================");
-                    System.out.println(fileExec);
-                    System.out.println(file.getAbsolutePath());
-                    System.out.println(queryString);
-                    System.out.println("===================================================");
-
-                    // System.out.print("jsh> ");
-                    // commandLine = console.readLine();
-
-                    // if (commandLine.equals(""))
-                    // continue;
-                    // if (commandLine.equals("exit"))
-                    // break;
                     ByteArrayOutputStream content = new ByteArrayOutputStream();
+                    
                     ProcessBuilder pb = new ProcessBuilder(fileExec);
+                    
                     Map<String, String> env = pb.environment();
                     env.put("QUERY_STRING", queryString);
                     // pb.redirectOutput(content.);
@@ -97,33 +84,19 @@ public class TesteRoger implements Runnable {
                     InputStream is = proc.getInputStream();
                     InputStreamReader isr = new InputStreamReader(is);
                     BufferedReader br = new BufferedReader(isr);
+                    
                     String lineq;
                     while ((lineq = br.readLine()) != null) {
                         content.write(lineq.getBytes());
-                        System.out.println(lineq);
                     }
 
-                    // br.close();
+                    br.close();
                     sendResponse("200 Document Follows", "text/html", content.toByteArray());
-                    client.close();
                 }
-
                 else if (Files.isDirectory(filePath)) {
 
                     String[] names = file.list();
                     ByteArrayOutputStream content = new ByteArrayOutputStream();
-                    // List<by> content = new ArrayList<>();
-
-                    // out.write("HTTP/1.0 200 Document Follows\r\n".getBytes());
-                    // out.write("Content-Type: text/html\r\n\r\n".getBytes());
-                    // out.write(
-                    // "<html xmlns=\"http://www.w3.org/1999/xhtml\"xml:lang=\"en\"
-                    // lang=\"en\">\r\n".getBytes());
-                    // out.write("<head>\r\n".getBytes());
-                    // out.write("<title>Linux/kernel/ - Linux Cross Reference - Free
-                    // Electrons</title>\r\n".getBytes());
-                    // out.write("</head>\r\n".getBytes());
-                    // out.write("<body>\r\n".getBytes());
 
                     content.write(
                             ("<td><a href=\"" + file.getParent().substring(6) + "/\">voltar</a></td>\n").getBytes());
@@ -143,7 +116,6 @@ public class TesteRoger implements Runnable {
                     byte[] notFoundContet = "<h1>Not found</h1>".getBytes();
                     sendResponse("404 Not Found", "text/html", notFoundContet);
                 }
-                client.close();
             }
         } catch (
 
@@ -153,7 +125,9 @@ public class TesteRoger implements Runnable {
             try {
                 in.close();
                 out.close();
-                client.close();
+                if (!(client.getKeepAlive()))
+                    client.close();
+
             } catch (Exception e) {
                 System.err.println(e.getStackTrace());
             }
