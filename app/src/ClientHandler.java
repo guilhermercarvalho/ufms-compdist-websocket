@@ -81,7 +81,7 @@ public class ClientHandler implements Runnable {
                         version, host, headers.toString());
                 System.out.println(accessLog);
 
-                // convert path into avaliable file in the sistem
+                // convert path into available file in the system
                 Path filePath = getFilePath(path);
                 File fileName = new File(filePath.toString());
 
@@ -123,7 +123,7 @@ public class ClientHandler implements Runnable {
                     is.close();
                     content.close();
 
-                } else if (Files.isDirectory(filePath)) { // file is a directory
+                } else if (Files.isDirectory(filePath)) { // check if file is a directory
                     String[] names = fileName.list();
                     ByteArrayOutputStream content = new ByteArrayOutputStream();
                     content.write(("<html xmlns=\"http://www.w3.org/1999/xhtml\"xml:lang=\"en\" lang=\"en\">\r\n"
@@ -144,7 +144,7 @@ public class ClientHandler implements Runnable {
 
                     sendResponse("200 Document Follows", "text/html", content.toByteArray());
 
-                } else if (Files.exists(filePath)) { // is a file
+                } else if (Files.exists(filePath)) { // check if is a file
                     String contentType = Files.probeContentType(filePath);
                     sendResponse("200 Document Follows", contentType, Files.readAllBytes(filePath));
                 } else { // not found
@@ -175,7 +175,8 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-
+    
+    // make response within HTTP protocol standards
     private void sendResponse(String status, String contentType, byte[] content) throws IOException {
         out.write(("HTTP/1.1 " + status + "\r\n").getBytes());
         out.write("Server: FACOM-CD-2020/1.0\r\n".getBytes());
@@ -187,6 +188,8 @@ public class ClientHandler implements Runnable {
         out.flush();
     }
 
+
+    // protect server files
     private Path getFilePath(String path) {
         if ("/".equals(path)) {
             path = "/index.html";
