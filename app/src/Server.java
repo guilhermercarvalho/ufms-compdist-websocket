@@ -1,14 +1,23 @@
-import java.net.*;
-import java.util.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * The Server that recives clients connections
+ * 
+ * @author Roger Daniel; Guilherme Carvalho
+ * @version 1.0
+ * @since 2020-10-25
+ */
 public class Server {
-    private static ArrayList<ClientHandler> clients = new ArrayList<>();
-    private static ExecutorService pool = Executors.newFixedThreadPool(5);
+    private static final int MAX_THREADS = 10; // number of threads
+    private static ArrayList<ClientHandler> clients = new ArrayList<>(); // list of clients
+    private static ExecutorService pool = Executors.newFixedThreadPool(MAX_THREADS); // pool of threads
 
     public static void main(String[] args) throws Exception {
-        // Valida argumentos
+        // validates arguments
         validateArgs(args);
 
         final int PORT = args.length > 1 ? Integer.parseInt(args[1]) : 8080;
